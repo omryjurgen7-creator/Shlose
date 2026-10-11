@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(Shlose VERSION 1.0.0)
+project(Shlose VERSION 1.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "")
@@ -23,6 +23,9 @@ juce_add_plugin(Shlose
     VST3_CATEGORIES Fx Dynamics
     COPY_PLUGIN_AFTER_BUILD FALSE)
 
+juce_add_binary_data(ShloseAssets SOURCES Assets/face.png)
+set_target_properties(ShloseAssets PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+
 juce_generate_juce_header(Shlose)
 
 target_sources(Shlose PRIVATE
@@ -35,7 +38,9 @@ target_compile_definitions(Shlose PUBLIC
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
 target_link_libraries(Shlose
-    PRIVATE juce::juce_audio_utils
+    PRIVATE ShloseAssets
+            juce::juce_audio_utils
+            juce::juce_dsp
     PUBLIC juce::juce_recommended_config_flags
            juce::juce_recommended_lto_flags
            juce::juce_recommended_warning_flags)

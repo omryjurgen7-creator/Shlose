@@ -128,9 +128,11 @@ void ShloseAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     float* data[2] = { buffer.getWritePointer (0), numCh > 1 ? buffer.getWritePointer (1) : nullptr };
     double blockMaxGR = 0.0;
+    const int wp = ringPos.load (std::memory_order_relaxed);
 
     for (int i = 0; i < n; ++i)
     {
+        inRing[(size_t) ((wp + i) & 8191)] = numCh > 1 ? 0.5f * (data[0][i] + data[1][i]) : data[0][i];
         double bp[2] = { 0.0, 0.0 };
         double det = 0.0;
         for (int ch = 0; ch < numCh; ++ch)
@@ -173,9 +175,12 @@ void ShloseAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
             }
             data[ch][i] = (float) outS;
         }
+
+        outRing[(size_t) ((wp + i) & 8191)] = numCh > 1 ? 0.5f * (data[0][i] + data[1][i]) : data[0][i];
     }
 
     grMeter.store ((float) blockMaxGR);
+    ringPos.store ((wp + n) & 8191, std::memory_order_relaxed);
 }
 
 juce::AudioProcessorEditor* ShloseAudioProcessor::createEditor()

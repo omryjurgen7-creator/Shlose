@@ -1,6 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "Dsp.h"
+#include <array>
 
 class ShloseAudioProcessor : public juce::AudioProcessor
 {
@@ -34,6 +35,10 @@ public:
     juce::AudioProcessorValueTreeState apvts;
 
     std::atomic<float> grMeter { 0.0f };   // current gain reduction in dB (positive)
+
+    // mono ring buffers (input / output) for the spectrum analyser
+    std::array<float, 8192> inRing {}, outRing {};
+    std::atomic<int> ringPos { 0 };
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createLayout();

@@ -1,5 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
+#include <complex>
 
 // RBJ band-pass (constant 0 dB peak gain). No allocations -> safe on audio thread.
 struct Biquad
@@ -29,4 +30,12 @@ struct Biquad
     }
 
     void reset() { z1 = z2 = 0.0; }
+
+    // complex frequency response at f Hz (used by the EQ display)
+    std::complex<double> response (double sr, double f) const
+    {
+        const double w = juce::MathConstants<double>::twoPi * f / sr;
+        const std::complex<double> z1c = std::polar (1.0, -w), z2c = std::polar (1.0, -2.0 * w);
+        return (b0 + b1 * z1c + b2 * z2c) / (1.0 + a1 * z1c + a2 * z2c);
+    }
 };

@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "UI.h"
+#include "EQDisplay.h"
 
 class ShloseAudioProcessorEditor : public juce::AudioProcessorEditor, private juce::Timer
 {
@@ -18,8 +19,11 @@ private:
     ShloseAudioProcessor& proc;
     ShloseLookAndFeel laf;
 
-    Knob freq, q, thr, range, ratio, attack, release, mix, out;
-    GRMeter meter;
+    FaceComponent face;
+    EQDisplay eq;
+    GRBar grBar;
+
+    Knob freq, thr, range, q, ratio, attack, release, mix, out;
 
     juce::ComboBox modeBox;
     juce::TextButton listenBtn { "LISTEN" };
